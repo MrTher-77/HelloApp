@@ -2,7 +2,7 @@ from transformers import pipeline
 from PIL import Image
 
 # Streamlit UI
-st.title("Title: Age Classification using ViT")
+st.write("Title: Age Classification using ViT")
 
 # Load the age classification pipeline
 # The code below should be placed in the main part of the program
