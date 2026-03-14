@@ -1,23 +1,26 @@
-from transformers import pipeline
-from PIL import Image
-import streamlit as st
+from transformers import AutoModelForSequenceClassification
+from transformers import AutoTokenizer
+import torch
+import numpy as np
 
-# Streamlit UI
-print("Title: Age Classification using ViT")
+# Testing with the saved model
+model2 = AutoModelForSequenceClassification.from_pretrained("CustomModel_yelp",
+                                                            num_labels=5)
+tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
 
-# Load the age classification pipeline
-# The code below should be placed in the main part of the program
-age_classifier = pipeline("image-classification", model="cledoux42/Age_Classify_v001")
+# Tokenized testing data
+label = 4 # label = 4
+text = "dr. goldberg offers everything i look for in a general practitioner. he's nice and easy to talk to without being patronizing; he's always on time in seeing his patients; he's affiliated with a top-notch hospital (nyu) which my parents have explained to me is very important in case something happens and you need surgery; and you can get referrals to see specialists without having to see him first. really, what more do you need? i'm sitting here trying to think of any complaints i have about him, but i'm really drawing a blank."
+inputs = tokenizer(text,
+                   padding=True,
+                   truncation=True,
+                   return_tensors='pt')
 
-image_name = "middleagedMan.jpg"
-image_name = Image.open(image_name).convert("RGB")
+outputs = model2(**inputs)
+predictions = torch.nn.functional.softmax(outputs.logits, dim=-1)
+predictions = predictions.cpu().detach().numpy()
 
-# Classify age
-age_predictions = age_classifier(image_name)
-print(age_predictions)
-age_predictions = sorted(age_predictions, key=lambda x: x['score'], reverse=True)
+# Get the index of the largest output value
+max_index = np.argmax(predictions)
 
-# Display results
-print("Predicted Age Range:")
-print(f"Age range: {age_predictions[0]['label']}")
-st.write(age_predictions)
+print(f"The label is {label} and the predicted label is {max_index}")
