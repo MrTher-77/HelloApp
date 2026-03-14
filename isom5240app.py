@@ -5,6 +5,8 @@ from transformers import AutoTokenizer
 import torch
 import numpy as np
 
+st.header("Testing App")
+
 # Testing with the saved model
 model2 = AutoModelForSequenceClassification.from_pretrained("CustomModel_yelp",
                                                             num_labels=5)
